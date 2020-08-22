@@ -45,10 +45,11 @@ app.post("/api/fav",(req,res) =>{
 });
 
 // Route for getting some data about saved outfit to be used client side
-app.get("/api/fav/id/:id", (req, res) => {
-  db.Outfits.findAll({
+app.get("/api/fav/id/:id", function(req, res) {
+  console.log("in apiroute");
+  db.Outfit.findAll({
     where: {
-      id: req.params.id
+      UserId: req.params.id
     }
   })
   .then(function(dbPost) {

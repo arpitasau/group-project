@@ -1,7 +1,7 @@
 /* eslint-disable */
 let womensSummerAccessories = [
-  "..//assets/images/womens/accessory1.png",
-  "..//assets/images/womens/accessory2.png",
+  "../assets/images/womens/accessory1.png",
+  "../assets/images/womens/accessory2.png",
   "../assets/images/womens/accessory3.png",
   "../assets/images/womens/accessory4.png",
   "../assets/images/womens/accessory5.png"
@@ -136,8 +136,13 @@ let mensWinterBoots = [
   "../assets/images/mens/wintershoe2.png",
   "../assets/images/mens/wintershoe3.png",
 ];
+let user_id;
+
+
 function carouselImg(el, imgArr) {
+  console.log(el)
   $(el).empty()
+  console.log(imgArr.length);
   for (let i = 0; i < imgArr.length; i++) {
     let carouselItem = $("<div>")
     if (i === 0) {
@@ -150,31 +155,48 @@ function carouselImg(el, imgArr) {
     // $('#top1Img').empty().append('<img src="..//assets/images/womens/tee1.png" height="200" width="200">')
   }
 }
+
+
+
 $(document).ready(() => {
   $("#outfit").hide();
+  $("#temp-card").hide();
+
    //function to get outfit from db
    function getOutfits(id) {
     let idString = id || "";
-    if (idString){ 
+    if (idString) { 
       idString = "/id/" + idString;
     }
     console.log(idString);
     $.get("/api/fav" + idString, function(data) {
-      console.log("Outfits", data);
-      console.log("outfit-test")
+      console.log(data);
+      let favArray = [];
+      for (let i = 0; i < data.length; i ++){
+        favArray.push(data[i].top);
+        favArray.push(data[i].bottom);
+        favArray.push(data[i].accessory);
+        favArray.push(data[i].shoe);
+      }
+      console.log("favArray", favArray);
+      
+      carouselImg('#showfav1', favArray);
       
     })
-  }
+  };
+   
   //to get the out fit image url from outfit table
   $("#saved-fav").on("click", event=>{
     event.preventDefault();
     console.log("saved-btn-clicked")
-    getOutfits(1);
-  }),
-
+    getOutfits(user_id);
+    
+  });
+  
   //to retrive the gender value from users table
   $.get("/api/user_data").then(data => {
     console.log(data.gender);
+    user_id = data.id;
     let m = moment();
     function displayWeather(response) {
       // converts timezone to UTC offset in minutes
@@ -204,6 +226,7 @@ $(document).ready(() => {
     $("#city-btn").on("click", ((event) => {
       event.preventDefault();
       $("#outfit").show();
+      $("#temp-card").show();
       $("#error").text('');
       let city = $("#city").val().toUpperCase();
       $.ajax({
